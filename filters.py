@@ -78,30 +78,6 @@ def create_filters(date=None, start_date=None, end_date=None,
                    velocity_min=None, velocity_max=None,
                    diameter_min=None, diameter_max=None,
                    hazardous=None):
-    filters = []
-    if date:
-        filters.append(lambda approach: approach.time.date() == date) 
-    if start_date:
-        filters.append(lambda approach: approach.time.date() >= start_date)
-    if end_date:
-        filters.append(lambda approach: approach.time.date() <= end_date)     
-    if distance_min:
-        filters.append(lambda approach: approach.distance >= distance_min)
-    if distance_max:
-        filters.append(lambda approach: approach.distance <= distance_max)
-    if velocity_min:
-        filters.append(lambda approach: approach.velocity >= velocity_min)
-    if velocity_max:
-        filters.append(lambda approach: approach.velocity <= velocity_max)
-        
-    if diameter_min:
-        # filters.append(lambda approach: neos_by_designation(approach._designation).diameter >= diameter_min)
-        filters.append(lambda approach: approach.neo.diameter >= diameter_min)
-    if diameter_max:
-        filters.append(lambda approach: approach.neo.diameter <= diameter_max)
-    if hazardous != None:
-        filters.append(lambda approach: approach.neo.hazardous == hazardous)
-        
         
     """Create a collection of filters from user-specified criteria.
 
@@ -132,9 +108,28 @@ def create_filters(date=None, start_date=None, end_date=None,
     :param hazardous: Whether the NEO of a matching `CloseApproach` is potentially hazardous.
     :return: A collection of filters for use with `query`.
     """
-    # TODO: Decide how you will represent your filters.
+    filters = []
+    if date:
+        filters.append(lambda approach: approach.time.date() == date) 
+    if start_date:
+        filters.append(lambda approach: approach.time.date() >= start_date)
+    if end_date:
+        filters.append(lambda approach: approach.time.date() <= end_date)     
+    if distance_min:
+        filters.append(lambda approach: approach.distance >= distance_min)
+    if distance_max:
+        filters.append(lambda approach: approach.distance <= distance_max)
+    if velocity_min:
+        filters.append(lambda approach: approach.velocity >= velocity_min)
+    if velocity_max:
+        filters.append(lambda approach: approach.velocity <= velocity_max)    
+    if diameter_min:
+        filters.append(lambda approach: approach.neo.diameter >= diameter_min)
+    if diameter_max:
+        filters.append(lambda approach: approach.neo.diameter <= diameter_max)
+    if hazardous != None:
+        filters.append(lambda approach: approach.neo.hazardous == hazardous)
     return filters
-
 
 def limit(iterator, n=None):
     """Produce a limited stream of values from an iterator.
@@ -145,15 +140,8 @@ def limit(iterator, n=None):
     :param n: The maximum number of values to produce.
     :yield: The first (at most) `n` values from the iterator.
     """
-    # TODO: Produce at most `n` values from the given iterator.
     res = []
     if n is not None and n != 0:
         return itertools.islice(iterator, n)
-#        for i in range(n):
-#            try:
-#                res.append(next(iterator))
-#            except:
-#                break
-#        return iter(res)
     else:
         return iterator
