@@ -17,6 +17,7 @@ iterator.
 You'll edit this file in Tasks 3a and 3c.
 """
 import operator
+import itertools
 
 
 class UnsupportedCriterionError(NotImplementedError):
@@ -72,19 +73,42 @@ class AttributeFilter:
         return f"{self.__class__.__name__}(op=operator.{self.op.__name__}, value={self.value})"
 
 
-def create_filters(
-        date=None, start_date=None, end_date=None,
-        distance_min=None, distance_max=None,
-        velocity_min=None, velocity_max=None,
-        diameter_min=None, diameter_max=None,
-        hazardous=None
-):
+def create_filters(date=None, start_date=None, end_date=None,
+                   distance_min=None, distance_max=None,
+                   velocity_min=None, velocity_max=None,
+                   diameter_min=None, diameter_max=None,
+                   hazardous=None):
+    filters = []
+    if date:
+        filters.append(lambda approach: approach.time.date() == date) 
+    if start_date:
+        filters.append(lambda approach: approach.time.date() >= start_date)
+    if end_date:
+        filters.append(lambda approach: approach.time.date() <= end_date)     
+    if distance_min:
+        filters.append(lambda approach: approach.distance >= distance_min)
+    if distance_max:
+        filters.append(lambda approach: approach.distance <= distance_max)
+    if velocity_min:
+        filters.append(lambda approach: approach.velocity >= velocity_min)
+    if velocity_max:
+        filters.append(lambda approach: approach.velocity <= velocity_max)
+        
+    if diameter_min:
+        # filters.append(lambda approach: neos_by_designation(approach._designation).diameter >= diameter_min)
+        filters.append(lambda approach: approach.neo.diameter >= diameter_min)
+    if diameter_max:
+        filters.append(lambda approach: approach.neo.diameter <= diameter_max)
+    if hazardous != None:
+        filters.append(lambda approach: approach.neo.hazardous == hazardous)
+        
+        
     """Create a collection of filters from user-specified criteria.
 
     Each of these arguments is provided by the main module with a value from the
     user's options at the command line. Each one corresponds to a different type
     of filter. For example, the `--date` option corresponds to the `date`
-    argument, and represents a filter that selects close approaches that occurred
+    argument, and represents a filter that selects close approaches that occured
     on exactly that given date. Similarly, the `--min-distance` option
     corresponds to the `distance_min` argument, and represents a filter that
     selects close approaches whose nominal approach distance is at least that
@@ -109,7 +133,7 @@ def create_filters(
     :return: A collection of filters for use with `query`.
     """
     # TODO: Decide how you will represent your filters.
-    return ()
+    return filters
 
 
 def limit(iterator, n=None):
@@ -122,4 +146,14 @@ def limit(iterator, n=None):
     :yield: The first (at most) `n` values from the iterator.
     """
     # TODO: Produce at most `n` values from the given iterator.
-    return iterator
+    res = []
+    if n is not None and n != 0:
+        return itertools.islice(iterator, n)
+#        for i in range(n):
+#            try:
+#                res.append(next(iterator))
+#            except:
+#                break
+#        return iter(res)
+    else:
+        return iterator
