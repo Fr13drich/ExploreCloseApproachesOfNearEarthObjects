@@ -60,7 +60,7 @@ class NearEarthObject:
         # Create an empty initial collection of linked approaches.
         self.approaches = []
     def serialize(self):
-        return dict('designation': self.designation, 'name': self.name, 'diameter_km': self.diameter, 'potentially_hazardous': self.hazardous)
+        return dict({'designation': self.designation, 'name': self.name  if self.name else "", 'diameter_km': self.diameter, 'potentially_hazardous': self.hazardous})
         
     @property
     def fullname(self):
@@ -122,8 +122,10 @@ class CloseApproach:
         self.neo = None
         # self.neo = neo
     def serialize(self):
-        return dict('datetime_utc': self.time, 'distance_au': self.distance, 'velocity_km_s': self.velocity)
-        
+        return dict({'datetime_utc': self.time_str, 'distance_au': self.distance, 'velocity_km_s': self.velocity, 'neo': self.neo.serialize()})
+    def serializecsv(self):
+        return dict({'datetime_utc': self.time_str, 'distance_au': self.distance, 'velocity_km_s': self.velocity, 'designation': self.neo.designation, 'name': self.neo.name, 'diameter_km': self.neo.diameter, 'potentially_hazardous': self.neo.hazardous})
+
     @property
     def time_str(self):
         """Return a formatted representation of this `CloseApproach`'s approach time.

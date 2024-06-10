@@ -30,7 +30,7 @@ def write_to_csv(results, filename):
         writer = csv.DictWriter(outfile, fieldnames= fieldnames)
         writer.writeheader()
         for result in results:
-            writer.writerow(result)
+            writer.writerow(result.serializecsv())
 
 def write_to_json(results, filename):
     """Write an iterable of `CloseApproach` objects to a JSON file.
@@ -44,4 +44,10 @@ def write_to_json(results, filename):
     :param filename: A Path-like object pointing to where the data should be saved.
     """
     # TODO: Write the results to a JSON file, following the specification in the instructions.
+    data = []
+    for result in results:
+        data.append(result.serialize())
+    with open(filename, 'w') as outfile:
+        json.dump(data, outfile, indent=2)
+
     
